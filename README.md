@@ -2,7 +2,7 @@
 
 This is a maintained fork of the [original plugin](https://github.com/leonid-shevtsov/ClickableUrls_SublimeText2).
 
-A plugin for [Sublime Text 2, 3, and 4](http://sublimetext.com)
+A plugin for [Sublime Text 2, 3, and 4](https://www.sublimetext.com/)
 
 ![Screenshot of a clickable URL](screenshot.png)
 
@@ -18,7 +18,7 @@ There is also an "Open all URLs" command, which opens all URLs found in the curr
 
 ## Installation
 
-With [Package Control](https://packages.sublimetext.io/) (open command pallet, then install packages, search for `Clickable Urls`, hit enter), or just drop the plugin into Sublime Text's Packages folder.
+With [Package Control](https://packages.sublimetext.io/) (open Command Palette(ctrl+shift+p), find `Package Control: Install Package`, search for `Clickable Urls`, hit enter), or just drop the plugin into Sublime Text's Packages folder.
 
 ## Configuration
 
