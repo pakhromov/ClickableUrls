@@ -1,0 +1,22 @@
+{
+    // Highlight URLs in the editor.
+    "highlight_urls": true,
+
+    // Maximum number of URLs per view to highlight. Views exceeding this
+    // limit are ignored to avoid slowdowns.
+    "max_url_limit": 200,
+
+    // Browser to use when opening URLs. Leave empty to use the system default.
+    // See "Customizing the browser" in the README for valid values.
+    "clickable_urls_browser": "",
+
+    // Underline style for highlighted URLs.
+    // Valid values: "solid", "stippled", "squiggly"
+    "underline_style": "squiggly",
+
+    // Scope name used to color the underline. When empty, each URL inherits
+    // the color of its surrounding syntax scope.
+    // Examples: "region.bluish", "region.redish", "region.greenish",
+    //           "region.yellowish", "region.orangish", "region.purplish"
+    "underline_color": "region.bluish",
+}

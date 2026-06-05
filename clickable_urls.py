@@ -76,28 +76,38 @@ class UrlHighlighter(sublime_plugin.EventListener):
     """Creates a set of regions from the intersection of urls and scopes,
     underlines all of them."""
     def highlight_urls(self, view, urls):
-        # We need separate regions for each lexical scope for ST to use a proper color for the underline
-        scope_map = {}
-        for url in urls:
-            scope_name = view.scope_name(url.a)
-            scope_map.setdefault(scope_name, []).append(url)
+        color_scope = sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('underline_color', '')
+        if color_scope:
+            self.underline_regions(view, color_scope, urls)
+            self.update_view_scopes(view, [color_scope])
+        else:
+            # We need separate regions for each lexical scope for ST to use a proper color for the underline
+            scope_map = {}
+            for url in urls:
+                scope_name = view.scope_name(url.a)
+                scope_map.setdefault(scope_name, []).append(url)
 
-        for scope_name in scope_map:
-            self.underline_regions(view, scope_name, scope_map[scope_name])
+            for scope_name in scope_map:
+                self.underline_regions(view, scope_name, scope_map[scope_name])
 
-        self.update_view_scopes(view, scope_map.keys())
+            self.update_view_scopes(view, scope_map.keys())
 
     """Apply underlining with provided scope name to provided regions.
     Uses the empty region underline hack for Sublime Text 2 and native
     underlining for Sublime Text 3."""
     def underline_regions(self, view, scope_name, regions):
         if sublime.version() >= '3019':
-            # in Sublime Text 3, the regions are just underlined
+            style = sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('underline_style', 'solid')
+            style_flag = {
+                'solid':    sublime.DRAW_SOLID_UNDERLINE,
+                'stippled': sublime.DRAW_STIPPLED_UNDERLINE,
+                'squiggly': sublime.DRAW_SQUIGGLY_UNDERLINE,
+            }.get(style, sublime.DRAW_SOLID_UNDERLINE)
             view.add_regions(
                 u'clickable-urls ' + scope_name,
                 regions,
                 scope_name,
-                flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE)
+                flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|style_flag)
         else:
             # in Sublime Text 2, the 'empty region underline' hack is used
             char_regions = [sublime.Region(pos, pos) for region in regions for pos in range(region.a, region.b)]

@@ -1,10 +1,6 @@
-# Project is discontinued!
-
-I'm not using Sublime Text anymore and have no interest in supporting this project.
-
-If you want to carry on, you have my full permission - and gratitude!
-
 # Clickable URLs
+
+This is a maintained fork of the [original plugin](https://github.com/leonid-shevtsov/ClickableUrls_SublimeText2).
 
 A plugin for [Sublime Text 2 and 3](http://sublimetext.com)
 
@@ -64,6 +60,26 @@ Unfortunately, the only way to underline a block of text in Sublime Text 2 is a 
     }
 
 Note that this isn't an issue with Sublime Text 3.
+
+### Customising the underline color
+
+By default, the underline color matches the lexical scope color of each URL. You can override this with a fixed scope color by setting `underline_color`:
+
+    {
+        "underline_color": "string"
+    }
+
+Any valid scope name works (e.g. `"region.bluish","region.greenish","region.yellowish"`).
+
+### Customising the underline style
+
+The underline style can be changed from the default `solid` to `stippled` or `squiggly`:
+
+    {
+        "underline_style": "squiggly"
+    }
+
+Valid values are `"solid"`, `"stippled"`, and `"squiggly"`. This setting only applies to Sublime Text 3 and later.
 
 ## Known Issues
 
