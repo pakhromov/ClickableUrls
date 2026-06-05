@@ -6,5 +6,13 @@
   {
     "caption": "Open all URLs",
     "command": "open_all_urls"
+  },
+  {
+    "caption": "Clickable URLs: Settings",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/ClickableUrls/ClickableUrls.sublime-settings",
+      "default": "{\n$0\n}\n"
+    }
   }
 ]

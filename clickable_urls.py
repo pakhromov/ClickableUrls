@@ -16,6 +16,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
     ignored_views = []
     browser = None
     highlight_semaphore = threading.Semaphore()
+    pending_open = {}
 
     def on_activated(self, view):
         self.update_url_highlights(view)
@@ -40,6 +41,35 @@ class UrlHighlighter(sublime_plugin.EventListener):
         for map in [self.urls_for_view, self.scopes_for_view, self.ignored_views]:
             if view.id() in map:
                 del map[view.id()]
+        UrlHighlighter.pending_open.pop(view.id(), None)
+
+    def on_selection_modified(self, view):
+        if view.id() in UrlHighlighter.pending_open and not all(s.empty() for s in view.sel()):
+            UrlHighlighter.pending_open.pop(view.id(), None)
+
+    def on_post_text_command(self, view, command_name, args):
+        if command_name != 'drag_select':
+            return
+        if not sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('open_on_click', False):
+            return
+        vid = view.id()
+        UrlHighlighter.pending_open.pop(vid, None)
+        if args and (args.get('extend') or args.get('additive') or args.get('by')):
+            return
+        if not view.sel():
+            return
+        pt = view.sel()[0].begin()
+        for region in UrlHighlighter.urls_for_view.get(vid, []):
+            if region.begin() < pt < region.end():
+                url = view.substr(region)
+                UrlHighlighter.pending_open[vid] = url
+                sublime.set_timeout(lambda: self._open_pending(vid, url), 300)
+                return
+
+    def _open_pending(self, vid, url):
+        if UrlHighlighter.pending_open.get(vid) == url:
+            UrlHighlighter.pending_open.pop(vid, None)
+            open_url(url)
 
     """The logic entry point. Find all URLs in view, store and highlight them"""
     def update_url_highlights(self, view):
@@ -131,7 +161,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
 
 
 def open_url(url):
-    browser =  sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('clickable_urls_browser')
+    browser = sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('clickable_urls_browser') or None
     try:
         webbrowser.get(browser).open(url, autoraise=True)
     except(webbrowser.Error):

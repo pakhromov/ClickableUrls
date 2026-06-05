@@ -10,6 +10,9 @@
     // See "Customizing the browser" in the README for valid values.
     "clickable_urls_browser": "",
 
+    // Open URLs with a single left click.
+    "open_on_click": false,
+
     // Underline style for highlighted URLs.
     // Valid values: "solid", "stippled", "squiggly"
     "underline_style": "squiggly",
