@@ -1,3 +1,9 @@
+## 2.0.1
+
+* Added `.gitattributes` to exclude `screenshot.png` from the installed package
+* Menu and Command Palette now open Settings and Key Bindings in split view via `edit_settings`
+* Renamed "Clickable URLs: Settings" to "Preferences: Clickable URLs Settings" and added "Preferences: Clickable URLs Key Bindings" to match Package Control naming conventions
+
 ## 2.0.0
 
 * Added `underline_color` setting to override the underline color with a fixed scope (e.g. `region.bluish`)
