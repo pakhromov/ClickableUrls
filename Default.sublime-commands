@@ -8,10 +8,18 @@
     "command": "open_all_urls"
   },
   {
-    "caption": "Clickable URLs: Settings",
+    "caption": "Preferences: Clickable URLs Settings",
     "command": "edit_settings",
     "args": {
-      "base_file": "${packages}/ClickableUrls/ClickableUrls.sublime-settings",
+      "base_file": "${packages}/Clickable URLs/ClickableUrls.sublime-settings",
+      "default": "{\n$0\n}\n"
+    }
+  },
+  {
+    "caption": "Preferences: Clickable URLs Key Bindings",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/Clickable URLs/Default ($platform).sublime-keymap",
       "default": "{\n$0\n}\n"
     }
   }
