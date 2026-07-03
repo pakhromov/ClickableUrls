@@ -85,6 +85,20 @@ The underline style can be changed from the default `solid` to `stippled` or `sq
 
 Valid values are `"solid"`, `"stippled"`, and `"squiggly"`. This setting only applies to Sublime Text 3 and later.
 
+### Showing a clickable phantom icon next to each URL
+
+An icon can be shown after each URL, the cursor changes to a pointer when you hover over the icon:
+
+    {
+        "show_phantom": true,
+        "phantom_icon": "⮊",
+        "phantom_color": "blue",
+        "phantom_size": "0.8em"
+    }
+
+Clicking the icon opens the URL in your browser (same as using the keyboard shortcut).
+
+
 ## Known Issues
 
 * URLs are not underlined in Markdown files when using the [MarkdownEditing plugin](https://github.com/SublimeText-Markdown/MarkdownEditing) plugin (that plugin applies its own styles to the URLs). Otherwise ClickableUrls works as usual.

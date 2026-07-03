@@ -1,3 +1,4 @@
+import html
 import sublime
 import sublime_plugin
 import webbrowser
@@ -13,6 +14,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
 
     urls_for_view = {}
     scopes_for_view = {}
+    phantom_sets_for_view = {}
     ignored_views = []
     browser = None
     highlight_semaphore = threading.Semaphore()
@@ -42,6 +44,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
             if view.id() in map:
                 del map[view.id()]
         UrlHighlighter.pending_open.pop(view.id(), None)
+        self._clear_phantoms(view)
 
     def on_selection_modified(self, view):
         if view.id() in UrlHighlighter.pending_open and not all(s.empty() for s in view.sel()):
@@ -93,6 +96,11 @@ class UrlHighlighter(sublime_plugin.EventListener):
         should_highlight_urls = sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('highlight_urls', True)
         if (should_highlight_urls):
             self.highlight_urls(view, urls)
+
+        if sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME).get('show_phantom', False):
+            self._show_phantoms(view, urls)
+        else:
+            self._clear_phantoms(view)
 
     """Same as update_url_highlights, but avoids race conditions with a
     semaphore."""
@@ -146,6 +154,36 @@ class UrlHighlighter(sublime_plugin.EventListener):
                 char_regions,
                 scope_name,
                 sublime.DRAW_EMPTY_AS_OVERWRITE)
+
+    def _show_phantoms(self, view, urls):
+        settings = sublime.load_settings(UrlHighlighter.SETTINGS_FILENAME)
+        icon = settings.get('phantom_icon', '\U0001f517')
+        color = settings.get('phantom_color', '')
+        size = settings.get('phantom_size', '')
+        style = 'text-decoration: none;'
+        if color:
+            style += ' color: {};'.format(color)
+        if size:
+            style += ' font-size: {};'.format(size)
+        vid = view.id()
+        if vid not in UrlHighlighter.phantom_sets_for_view:
+            UrlHighlighter.phantom_sets_for_view[vid] = sublime.PhantomSet(view, 'clickable-urls-phantoms')
+        phantoms = []
+        for region in urls:
+            url = view.substr(region)
+            phantoms.append(sublime.Phantom(
+                sublime.Region(region.end()),
+                '<a href="{}" style="{}">{}</a>'.format(html.escape(url, quote=True), style, html.escape(icon)),
+                sublime.LAYOUT_INLINE,
+                on_navigate=open_url,
+            ))
+        UrlHighlighter.phantom_sets_for_view[vid].update(phantoms)
+
+    def _clear_phantoms(self, view):
+        vid = view.id()
+        if vid in UrlHighlighter.phantom_sets_for_view:
+            UrlHighlighter.phantom_sets_for_view[vid].update([])
+            del UrlHighlighter.phantom_sets_for_view[vid]
 
     """Store new set of underlined scopes for view. Erase underlining from
     scopes that were used but are not anymore."""

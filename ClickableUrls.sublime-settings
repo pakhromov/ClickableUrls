@@ -22,4 +22,21 @@
     // Examples: "region.bluish", "region.redish", "region.greenish",
     //           "region.yellowish", "region.orangish", "region.purplish"
     "underline_color": "region.bluish",
+
+    // Show a small inline icon after each URL.
+    "show_phantom": true,
+
+    // Icon displayed in the phantom next to each URL. Any string is valid,
+    // including emoji.
+    //🔗 ⧉ ⊙ ◉ ⍈
+    //↗ ⤴ ⬏ → » ⇒ ↱ ⇝ ➢ ➤ ➥ ➦ ⮊ ⮕ ⮚ ⮞ ☛ ⮵ ⮳ ⏎
+    "phantom_icon": "🔗",
+
+    // CSS color for the phantom icon. Any valid CSS color or variable works:
+    //   "var(--foreground)", "bluish", "#e95420"
+    "phantom_color": "",
+
+    // CSS font-size for the phantom icon. Any valid CSS value works:
+    //   "0.8em", "12px". Empty inherits the editor font size.
+    "phantom_size": "0.8em",
 }
