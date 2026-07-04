@@ -205,6 +205,31 @@ def open_url(url):
     except(webbrowser.Error):
         sublime.error_message('Failed to open browser. See "Customizing the browser" in the README.')
 
+class OpenUrlOnClickCommand(sublime_plugin.TextCommand):
+    def want_event(self):
+        return True
+
+    def run(self, edit, event=None):
+        if event:
+            pt = self.view.window_to_text((event['x'], event['y']))
+        elif self.view.sel():
+            pt = self.view.sel()[0].begin()
+        else:
+            return
+        vid = self.view.id()
+        for region in UrlHighlighter.urls_for_view.get(vid, []):
+            if region.contains(pt):
+                url = self.view.substr(region)
+                UrlHighlighter.pending_open[vid] = url
+                sublime.set_timeout(lambda: self._open_pending(vid, url), 300)
+                return
+
+    def _open_pending(self, vid, url):
+        if UrlHighlighter.pending_open.get(vid) == url:
+            UrlHighlighter.pending_open.pop(vid, None)
+            open_url(url)
+
+
 class OpenUrlUnderCursorCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         if self.view.id() in UrlHighlighter.urls_for_view:
