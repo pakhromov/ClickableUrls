@@ -65,9 +65,13 @@ By default, URLs open via the keyboard shortcut. To enable single left-click to 
 
 A 300ms delay is used to distinguish between a single click and a double (triple) click. Any drag or text selection cancels the pending open.
 
-Note: because the delay starts on mouse *press*, if you click a URL and hold the button down longer than 300ms without moving, the URL will open even though you may still be trying to start a selection. If you want opening to trigger on mouse *release* instead, leave `open_on_click` disabled and add the following to your default sublime-mousemap (Command Palette(ctrl+shift+p) -> Preferences: Mouse Bindings):
+Note: because the delay starts on mouse *press*, if you click a URL and hold the button down longer than 300ms without moving, the URL will open even though you may still be trying to start a selection. If you want opening to trigger on mouse *release* instead, leave `open_on_click` disabled and add the following to your default sublime-mousemap (Command Palette(ctrl+shift+p) > Preferences: Mouse Bindings):
 
-    { "button": "button1", "count": 1, "press_command": "drag_select", "command": "open_url_on_click" }
+    {
+        "button": "button1",
+        "count": 1, "press_command": "drag_select",
+        "command": "open_url_on_click"
+    }
 
 ### Customising the underline color
 
