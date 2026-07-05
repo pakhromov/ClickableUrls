@@ -22,16 +22,6 @@ class UrlHighlighter(sublime_plugin.EventListener):
     def on_activated(self, view):
         self.update_url_highlights(view)
 
-    # Blocking handlers for ST2
-    def on_load(self, view):
-        if sublime.version() < '3000':
-            self.update_url_highlights(view)
-
-    def on_modified(self, view):
-        if sublime.version() < '3000':
-            self.update_url_highlights(view)
-
-    # Async listeners for ST3
     def on_load_async(self, view):
         self.update_url_highlights_async(view)
 
@@ -129,25 +119,16 @@ class UrlHighlighter(sublime_plugin.EventListener):
     Uses the empty region underline hack for Sublime Text 2 and native
     underlining for Sublime Text 3."""
     def underline_regions(self, view, scope_name, regions, settings):
-        if sublime.version() >= '3019':
-            style_flag = {
-                'solid':    sublime.DRAW_SOLID_UNDERLINE,
-                'stippled': sublime.DRAW_STIPPLED_UNDERLINE,
-                'squiggly': sublime.DRAW_SQUIGGLY_UNDERLINE,
-            }.get(settings.get('underline_style', 'solid'), sublime.DRAW_SOLID_UNDERLINE)
-            view.add_regions(
-                u'clickable-urls ' + scope_name,
-                regions,
-                scope_name,
-                flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|style_flag)
-        else:
-            # in Sublime Text 2, the 'empty region underline' hack is used
-            char_regions = [sublime.Region(pos, pos) for region in regions for pos in range(region.a, region.b)]
-            view.add_regions(
-                u'clickable-urls ' + scope_name,
-                char_regions,
-                scope_name,
-                sublime.DRAW_EMPTY_AS_OVERWRITE)
+        style_flag = {
+            'solid':    sublime.DRAW_SOLID_UNDERLINE,
+            'stippled': sublime.DRAW_STIPPLED_UNDERLINE,
+            'squiggly': sublime.DRAW_SQUIGGLY_UNDERLINE,
+        }.get(settings.get('underline_style', 'solid'), sublime.DRAW_SOLID_UNDERLINE)
+        view.add_regions(
+            'clickable-urls ' + scope_name,
+            regions,
+            scope_name,
+            flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|style_flag)
 
     def _show_phantoms(self, view, urls, settings):
         icon = settings.get('phantom_icon', '\U0001f517')
@@ -181,7 +162,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
         old_scopes = UrlHighlighter.scopes_for_view.get(view.id())
         if old_scopes:
             for unused_scope_name in set(old_scopes) - set(new_scopes):
-                view.erase_regions(u'clickable-urls ' + unused_scope_name)
+                view.erase_regions('clickable-urls ' + unused_scope_name)
 
         UrlHighlighter.scopes_for_view[view.id()] = new_scopes
 
