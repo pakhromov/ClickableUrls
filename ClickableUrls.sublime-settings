@@ -17,8 +17,7 @@
     // Valid values: "solid", "stippled", "squiggly"
     "underline_style": "squiggly",
 
-    // Scope name used to color the underline. When empty, each URL inherits
-    // the color of its surrounding syntax scope.
+    // Scope name used to color the underline.
     // Examples: "region.bluish", "region.redish", "region.greenish",
     //           "region.yellowish", "region.orangish", "region.purplish"
     "underline_color": "region.bluish",

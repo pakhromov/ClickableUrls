@@ -2,7 +2,7 @@
 
 This is a maintained fork of the [original plugin](https://github.com/leonid-shevtsov/ClickableUrls_SublimeText2).
 
-A plugin for [Sublime Text 2, 3, and 4](https://www.sublimetext.com/)
+A plugin for [Sublime Text 4](https://www.sublimetext.com/)
 
 ![Screenshot of a clickable URL](screenshot.png)
 
@@ -47,13 +47,11 @@ The ampersand at the end is significant - without it the editor will hang and wa
 
 ### Disabling URL highlighting
 
-Unfortunately, the only way to underline a block of text in Sublime Text 2 is a hack with underlining empty regions, and there is no way to control its appearance. If you want, you can disable URL highlighting by setting the option `highlight_urls` to false.
+To disable URL highlighting, set `highlight_urls` to false:
 
     {
         "highlight_urls": false
     }
-
-Note that this isn't an issue with Sublime Text 3.
 
 ### Opening URLs with a single click
 
@@ -75,13 +73,13 @@ Note: because the delay starts on mouse *press*, if you click a URL and hold the
 
 ### Customising the underline color
 
-By default, the underline color matches the lexical scope color of each URL. You can override this with a fixed scope color by setting `underline_color`:
+URLs are underlined in `region.bluish` by default. Change it with `underline_color`:
 
     {
-        "underline_color": "string"
+        "underline_color": "region.greenish"
     }
 
-Any valid scope name works (e.g. `"region.bluish","region.greenish","region.yellowish"`).
+Any valid scope name works (e.g. `"region.bluish"`, `"region.greenish"`, `"region.yellowish"`).
 
 ### Customising the underline style
 
@@ -91,7 +89,7 @@ The underline style can be changed from the default `solid` to `stippled` or `sq
         "underline_style": "squiggly"
     }
 
-Valid values are `"solid"`, `"stippled"`, and `"squiggly"`. This setting only applies to Sublime Text 3 and later.
+Valid values are `"solid"`, `"stippled"`, and `"squiggly"`.
 
 ### Showing a clickable phantom icon next to each URL
 

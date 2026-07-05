@@ -13,7 +13,6 @@ class UrlHighlighter(sublime_plugin.EventListener):
     SETTINGS_FILENAME = 'ClickableUrls.sublime-settings'
 
     urls_for_view = {}
-    scopes_for_view = {}
     phantom_sets_for_view = {}
     ignored_views = set()
     highlight_semaphore = threading.Semaphore()
@@ -30,7 +29,6 @@ class UrlHighlighter(sublime_plugin.EventListener):
 
     def on_close(self, view):
         UrlHighlighter.urls_for_view.pop(view.id(), None)
-        UrlHighlighter.scopes_for_view.pop(view.id(), None)
         UrlHighlighter.ignored_views.discard(view.id())
         self._clear_phantoms(view)
 
@@ -67,7 +65,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
 
         # Avoid slowdowns for views with too much URLs
         if len(urls) > settings.get('max_url_limit', UrlHighlighter.DEFAULT_MAX_URLS):
-            print("UrlHighlighter: ignoring view with %u URLs" % len(urls))
+            print(f"UrlHighlighter: ignoring view with {len(urls)} URLs")
             UrlHighlighter.ignored_views.add(view.id())
             return
 
@@ -79,8 +77,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
         if settings.get('highlight_urls', True):
             self.highlight_urls(view, urls, settings)
         else:
-            for scope_name in UrlHighlighter.scopes_for_view.get(view.id()) or []:
-                view.erase_regions('clickable-urls ' + scope_name)
+            view.erase_regions('clickable-urls')
 
         if settings.get('show_phantom', False):
             self._show_phantoms(view, urls, settings)
@@ -96,56 +93,32 @@ class UrlHighlighter(sublime_plugin.EventListener):
         finally:
             UrlHighlighter.highlight_semaphore.release()
 
-    """Creates a set of regions from the intersection of urls and scopes,
-    underlines all of them."""
     def highlight_urls(self, view, urls, settings):
-        color_scope = settings.get('underline_color', '')
-        if color_scope:
-            self.underline_regions(view, color_scope, urls, settings)
-            self.update_view_scopes(view, [color_scope])
-        else:
-            # We need separate regions for each lexical scope for ST to use a proper color for the underline
-            scope_map = {}
-            for url in urls:
-                scope_name = view.scope_name(url.a)
-                scope_map.setdefault(scope_name, []).append(url)
-
-            for scope_name in scope_map:
-                self.underline_regions(view, scope_name, scope_map[scope_name], settings)
-
-            self.update_view_scopes(view, list(scope_map.keys()))
-
-    """Apply underlining with provided scope name to provided regions.
-    Uses the empty region underline hack for Sublime Text 2 and native
-    underlining for Sublime Text 3."""
-    def underline_regions(self, view, scope_name, regions, settings):
         style_flag = {
             'solid':    sublime.DRAW_SOLID_UNDERLINE,
             'stippled': sublime.DRAW_STIPPLED_UNDERLINE,
             'squiggly': sublime.DRAW_SQUIGGLY_UNDERLINE,
         }.get(settings.get('underline_style', 'solid'), sublime.DRAW_SOLID_UNDERLINE)
         view.add_regions(
-            'clickable-urls ' + scope_name,
-            regions,
-            scope_name,
+            'clickable-urls',
+            urls,
+            settings.get('underline_color', 'region.bluish'),
             flags=sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|style_flag)
 
     def _show_phantoms(self, view, urls, settings):
         icon = settings.get('phantom_icon', '\U0001f517')
-        color = settings.get('phantom_color', '')
-        size = settings.get('phantom_size', '')
         style = 'text-decoration: none;'
-        if color:
-            style += ' color: {};'.format(color)
-        if size:
-            style += ' font-size: {};'.format(size)
+        if color := settings.get('phantom_color', ''):
+            style += f' color: {color};'
+        if size := settings.get('phantom_size', ''):
+            style += f' font-size: {size};'
         if view.id() not in UrlHighlighter.phantom_sets_for_view:
             UrlHighlighter.phantom_sets_for_view[view.id()] = sublime.PhantomSet(view, 'clickable-urls-phantoms')
         phantoms = []
         for region in urls:
             phantoms.append(sublime.Phantom(
                 sublime.Region(region.end()),
-                '<a href="{}" style="{}">{}</a>'.format(html.escape(view.substr(region), quote=True), style, html.escape(icon)),
+                f'<a href="{html.escape(view.substr(region), quote=True)}" style="{style}">{html.escape(icon)}</a>',
                 sublime.LAYOUT_INLINE,
                 on_navigate=open_url,
             ))
@@ -155,16 +128,6 @@ class UrlHighlighter(sublime_plugin.EventListener):
         if view.id() in UrlHighlighter.phantom_sets_for_view:
             UrlHighlighter.phantom_sets_for_view[view.id()].update([])
             del UrlHighlighter.phantom_sets_for_view[view.id()]
-
-    """Store new set of underlined scopes for view. Erase underlining from
-    scopes that were used but are not anymore."""
-    def update_view_scopes(self, view, new_scopes):
-        old_scopes = UrlHighlighter.scopes_for_view.get(view.id())
-        if old_scopes:
-            for unused_scope_name in set(old_scopes) - set(new_scopes):
-                view.erase_regions('clickable-urls ' + unused_scope_name)
-
-        UrlHighlighter.scopes_for_view[view.id()] = new_scopes
 
 
 
