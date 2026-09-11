@@ -12,9 +12,9 @@ This plugin underlines URLs in Sublime Text, and lets you open them with a keyst
 
 After you put the cursor over an URL, you can either hit `Cmd+Option+Enter` (`Ctrl+Alt+Enter` on Windows & Linux), or select "Open URL under cursor" from the Command Palette. Instead of selecting an auto detected URL, you can select any block of text and it will also open in a browser as a URL.
 
-There is also an "Open all URLs" command, which opens all URLs found in the current document.
+There is also an "Open all URLs" command, which opens every URL found in the current document, after asking you to confirm.
 
-**Performance warning.** The plugin is automatically disabled if the document has more than 200 URLs, in order to avoid a massive performance hit. To change this number, set the `max_url_limit` option (see "Configuration" below).
+**Performance warning.** The plugin is automatically disabled if the document has more than 200 URLs or is larger than about 1 MB, in order to avoid a massive performance hit. Both limits are configurable - see "Performance" below.
 
 ## Installation
 
@@ -26,8 +26,7 @@ All configuration is done via the settings file that you can open via the main m
 
 ### Customising the browser
 
-By default, Clickable URLs uses some default system browser. If it doesn't work for you, you can change the browser by setting the `clickable_urls_browser` in the `ClickableUrls.sublime-settings`
-file, to which you can get from the menu.
+By default, Clickable URLs uses some default system browser. If it doesn't work for you, you can change the browser by setting the `clickable_urls_browser` in the `ClickableUrls.sublime-settings` file, to which you can get from the menu.
 
 Anything from [this list](https://docs.python.org/2/library/webbrowser.html#webbrowser.register) will work, for example:
 
@@ -83,10 +82,10 @@ Any valid scope name works (e.g. `"region.bluish"`, `"region.greenish"`, `"regio
 
 ### Customising the underline style
 
-The underline style can be changed from the default `solid` to `stippled` or `squiggly`:
+The underline style can be changed from the default `squiggly`:
 
     {
-        "underline_style": "squiggly"
+        "underline_style": "stippled"
     }
 
 Valid values are `"solid"`, `"stippled"`, and `"squiggly"`.
@@ -104,6 +103,22 @@ An icon can be shown after each URL, the cursor changes to a pointer when you ho
 
 Clicking the icon opens the URL in your browser (same as using the keyboard shortcut).
 
+
+### Performance
+
+Three settings control how much work the plugin does:
+
+    {
+        "max_url_limit": 200,
+        "max_file_size": 1048576,
+        "debounce_ms": 500
+    }
+
+`max_url_limit` - documents containing more URLs than this are ignored.
+
+`max_file_size` - documents longer than this (counted in characters), are ignored.
+
+`debounce_ms` - how long to wait after you stop typing before rescanning the buffer.
 
 ## Known Issues
 

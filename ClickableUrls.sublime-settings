@@ -6,6 +6,14 @@
     // limit are ignored to avoid slowdowns.
     "max_url_limit": 200,
 
+    // Maximum buffer size, in characters, that will be scanned at all. Larger
+    // documents are ignored no matter how few URLs they contain.
+    "max_file_size": 1048576,
+
+    // How long to wait, in milliseconds, after typing stops before rescanning
+    // the buffer for URLs. Set to 0 to rescan on every keystroke instead.
+    "debounce_ms": 500,
+
     // Browser to use when opening URLs. Leave empty to use the system default.
     // See "Customizing the browser" in the README for valid values.
     "clickable_urls_browser": "",
