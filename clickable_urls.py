@@ -87,9 +87,7 @@ class UrlHighlighter(sublime_plugin.EventListener):
     def _ignore(view, reason):
         """Retire a buffer for good. Every entry point goes through urls_for,
         so this is all it takes to stop the plugin touching it again."""
-        message = f'UrlHighlighter: ignoring view with {reason}'
-        print(message)
-        sublime.status_message(message)
+        print(f'UrlHighlighter: ignoring view with {reason}')
         UrlHighlighter.ignored_buffers.add(view.buffer_id())
         UrlHighlighter.urls_for_buffer.pop(view.buffer_id(), None)
 
