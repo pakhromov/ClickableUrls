@@ -6,9 +6,13 @@ import threading
 
 
 class UrlHighlighter(sublime_plugin.EventListener):
-    # Thanks Jeff Atwood http://www.codinghorror.com/blog/2008/10/the-problem-with-urls.html
-    # ^ that up here is a URL that should be matched
-    URL_REGEX = "\\bhttps?://[-A-Za-z0-9+&@#/%?=~_()|!:,.;']*[-A-Za-z0-9+&@#/%=~_(|]"
+    # Parentheses are only taken in balanced pairs, so a URL can end with one,
+    # (https://en.wikipedia.org/wiki/Python_(programming_language)), while the
+    # one closing a parenthetical around it is left out.
+    _URL_CHAR = "[-A-Za-z0-9+&@#/%?=~_|!:,.;']"
+    _URL_PARENS = f"\\({_URL_CHAR}*\\)"
+    URL_REGEX = (f"\\bhttps?://{_URL_CHAR}*(?:{_URL_PARENS}{_URL_CHAR}*)*"
+                 f"(?:[-A-Za-z0-9+&@#/%=~_|]|{_URL_PARENS})")
     SETTINGS_FILENAME = 'ClickableUrls.sublime-settings'
 
     urls_for_buffer = {}

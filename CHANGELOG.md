@@ -1,3 +1,8 @@
+## 2.1.1
+
+* Fixed: a URL ending with a closing parenthesis, like `https://en.wikipedia.org/wiki/Python_(programming_language)`, was highlighted and opened without it. Parentheses are now matched in balanced pairs, so a parenthesis wrapped around a URL is still left out
+
+
 ## 2.1.0
 
 * Added phantom icons: a clickable inline icon after each URL, controlled by `show_phantom` (on by default), `phantom_icon`, `phantom_color` and `phantom_size`
