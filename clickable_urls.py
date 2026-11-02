@@ -6,13 +6,15 @@ import threading
 
 
 class UrlHighlighter(sublime_plugin.EventListener):
-    # Parentheses are only taken in balanced pairs, so a URL can end with one,
-    # (https://en.wikipedia.org/wiki/Python_(programming_language)), while the
-    # one closing a parenthetical around it is left out.
-    _URL_CHAR = "[-A-Za-z0-9+&@#/%?=~_|!:,.;']"
-    _URL_PARENS = f"\\({_URL_CHAR}*\\)"
-    URL_REGEX = (f"\\bhttps?://{_URL_CHAR}*(?:{_URL_PARENS}{_URL_CHAR}*)*"
-                 f"(?:[-A-Za-z0-9+&@#/%=~_|]|{_URL_PARENS})")
+    # Parentheses and braces are only taken in balanced pairs, including nested
+    # pairs. Closing delimiters around a URL are left out of the match.
+    # Check for a closer before recursing through a run of unclosed delimiters.
+    _URL_CHAR = "[-A-Za-z0-9+&@#/%?=~_|!:,.;'$]"
+    _URL_PAIR = (f"(?<pair>\\((?=\\S*\\))(?:{_URL_CHAR}|(?&pair))*\\)"
+                 f"|\\{{(?=\\S*\\}})(?:{_URL_CHAR}|(?&pair))*\\}})")
+    URL_REGEX = (f"\\bhttps?://{_URL_CHAR}*(?:(?&pair){_URL_CHAR}*)*"
+                 f"(?:[-A-Za-z0-9+&@#/%=~_|$]|(?&pair))"
+                 f"(?(DEFINE){_URL_PAIR})")
     SETTINGS_FILENAME = 'ClickableUrls.sublime-settings'
 
     urls_for_buffer = {}

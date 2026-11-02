@@ -1,3 +1,9 @@
+## 2.1.2
+
+* Fixed: URLs containing `$var` or `${var}` are now matched in full, so the phantom icon no longer appears in the middle of the URL ([#1](https://github.com/pakhromov/ClickableUrls/issues/1))
+* Parentheses and braces now support nested and mixed balanced pairs, while closing delimiters surrounding a URL are left out
+
+
 ## 2.1.1
 
 * Fixed: a URL ending with a closing parenthesis, like `https://en.wikipedia.org/wiki/Python_(programming_language)`, was highlighted and opened without it. Parentheses are now matched in balanced pairs, so a parenthesis wrapped around a URL is still left out
